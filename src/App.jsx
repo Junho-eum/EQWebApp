@@ -19,7 +19,6 @@ function App() {
 
   return (
     <>
-      <h1>Vite + React + AWS Amplify</h1>
       <div className="song-list">
         <h2>Available Songs</h2>
         <ul>
@@ -27,9 +26,6 @@ function App() {
             songs.map((song, index) => <li key={index}>{song}</li>)}
         </ul>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }
