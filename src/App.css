@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +41,93 @@
 
 .read-the-docs {
   color: #888;
+}
+/* App.css */
+
+.song-list {
+  font-family: 'Roboto', sans-serif; /* A more modern font */
+}
+
+.song-list h2 {
+  font-size: 24px;
+  margin-bottom: 1em;
+}
+
+.song-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.song-list li {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+.song-list li:hover {
+  background-color: #f0f0f0; /* Light grey for hover */
+  cursor: pointer;
+}
+
+.song-list li.selected:hover {
+  background-color: #367a38; /* Darker green when selected and hovered */
+}
+.song-list li.selected {
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+.song-list li::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background-color: #ddd;
+  transition: background-color 0.3s ease;
+}
+
+.song-list li.selected::before {
+  background-color: #4CAF50; /* Green to indicate selection */
+}
+
+.song-list li a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.song-list button {
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  padding: 10px 20px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF; /* Blue */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.song-list button:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.song-list button:disabled {
+  background-color: #ccc;
+}
+@media (max-width: 768px) {
+  .song-list {
+    margin: 10px;
+  }
+
+  .song-list h2 {
+    font-size: 20px;
+  }
+
+  .song-list button {
+    width: 100%;
+  }
 }
