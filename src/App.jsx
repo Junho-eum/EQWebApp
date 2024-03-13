@@ -3,33 +3,52 @@ import "./App.css";
 
 function App() {
   const [songs, setSongs] = useState([]);
-  const [selectedSongs, setSelectedSongs] = useState([]); // State for selected songs
+  const [selectedSongs, setSelectedSongs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // State to track loading state
+  const [feedbackMessage, setFeedbackMessage] = useState(""); // Success or error message
 
-  function handleSongClick(song) {
-    setSelectedSongs((prevSelectedSongs) => [...prevSelectedSongs, song]); // Add clicked song to list
+  function handleSongClick(e, song) {
+    e.preventDefault(); // Prevent default anchor behavior
+    if (!selectedSongs.includes(song)) {
+      // Prevent duplicate selections
+      setSelectedSongs((prevSelectedSongs) => [...prevSelectedSongs, song]);
+    }
   }
 
   function handleCompute() {
+    console.log("Selected Songs before sending:", selectedSongs);
+    setIsLoading(true); // Indicate loading state
+
     fetch("https://0dqw08eohj.execute-api.us-east-1.amazonaws.com/dev/songs", {
-      // Replace with your actual API endpoint
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(selectedSongs),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log("Lambda response:", data);
-        // Potentially reset selectedSongs or update UI with processing results
+        setFeedbackMessage("Songs processed successfully!"); // Set success message
+        setSelectedSongs([]); // Optionally clear selected songs
       })
-      .catch((error) => console.error("Error calling Lambda:", error));
+      .catch((error) => {
+        console.error("Error calling Lambda:", error);
+        setFeedbackMessage("Failed to process songs"); // Set error message
+      })
+      .finally(() => setIsLoading(false)); // Reset loading state
   }
 
   useEffect(() => {
-    const apiEndpoint =
-      "https://0dqw08eohj.execute-api.us-east-1.amazonaws.com/dev/songs"; // Replace with API endpoint for fetching songs
-    fetch(apiEndpoint)
+    fetch("https://0dqw08eohj.execute-api.us-east-1.amazonaws.com/dev/songs")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data); // Log the data to inspect its structure
+        console.log(data);
         setSongs(data);
       })
       .catch((error) => console.error("Error fetching songs:", error));
@@ -39,21 +58,26 @@ function App() {
     <>
       <div className="song-list">
         <h2>Available Songs</h2>
+        <button onClick={handleCompute} disabled={isLoading}>
+          Compute
+        </button>
+        {isLoading && <p>Loading...</p>}
+        {feedbackMessage && <p>{feedbackMessage}</p>}
         <ul>
-          {Array.isArray(songs) &&
-            songs.map((song, index) => (
-              <li key={index}>
-                <a href="#" onClick={() => handleSongClick(song)}>
-                  {song}
-                </a>
-              </li>
-            ))}
+          {songs.map((song) => (
+            <li
+              key={song}
+              className={selectedSongs.includes(song) ? "selected" : ""}
+            >
+              <a href="#" onClick={(e) => handleSongClick(e, song)}>
+                {song}
+              </a>
+            </li>
+          ))}
         </ul>
-        <button onClick={handleCompute}>Compute</button>
       </div>
     </>
   );
 }
 
 export default App;
-
