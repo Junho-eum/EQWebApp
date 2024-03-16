@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-
+import ComputeButton from "./components/ComputeButton";
+import SongList from "./components/SongList"; 
 function App() {
   const [songs, setSongs] = useState([]);
   const [selectedSongs, setSelectedSongs] = useState([]);
@@ -16,16 +17,24 @@ function App() {
   }
 
   function handleCompute() {
-    console.log("Selected Songs before sending:", selectedSongs);
+    const selectedSongsWithS3Prefix = selectedSongs.map(
+          (song) => `s3://musicsampledata/${song}`
+        );
+
+    console.log("Selected Songs with S3 prefix before sending:", selectedSongsWithS3Prefix);
     setIsLoading(true); // Indicate loading state
 
+    // Send selected songs to Lambda
+    // Makes POST request to the same API endpoint
     fetch("https://0dqw08eohj.execute-api.us-east-1.amazonaws.com/dev/songs", {
       method: "POST",
+      // Request body format is JSON
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(selectedSongs),
+      body: JSON.stringify(selectedSongsWithS3Prefix),
     })
+
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -58,23 +67,16 @@ function App() {
     <>
       <div className="song-list">
         <h2>Available Songs</h2>
-        <button onClick={handleCompute} disabled={isLoading}>
-          Compute
-        </button>
-        {isLoading && <p>Loading...</p>}
-        {feedbackMessage && <p>{feedbackMessage}</p>}
-        <ul>
-          {songs.map((song) => (
-            <li
-              key={song}
-              className={selectedSongs.includes(song) ? "selected" : ""}
-            >
-              <a href="#" onClick={(e) => handleSongClick(e, song)}>
-                {song}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <ComputeButton
+          isLoading={isLoading}
+          handleCompute={handleCompute}
+          feedbackMessage={feedbackMessage}
+        />
+        <SongList
+          songs={songs}
+          selectedSongs={selectedSongs}
+          handleSongClick={handleSongClick}
+        />
       </div>
     </>
   );
